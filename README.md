@@ -169,12 +169,14 @@ So, you've just added your own provider and you're feeling pretty good about it!
 
 If you want to run the image with your own provider without building a new image, that is also possible. For some providers, like AirVPN, the .ovpn files are generated per user and contains credentials. They should not be added to a public image. This is what you do:
 
-Add a new volume mount to your `docker run` command that mounts your config file:
-`-v /path/to/your/config.ovpn:/etc/openvpn/custom/default.ovpn`
+Open the .ovpn file in any editor and change the line `auth-user-pass` with `auth-user-pass /config/openvpn-credentials.txt` 
 
-Then you can set `OPENVPN_PROVIDER=CUSTOM`and the container will use the config you provided. If you are using AirVPN or other provider with credentials in the config file, you still need to set `OPENVPN_USERNAME` and `OPENVPN_PASSWORD` as this is required by the startup script. They will not be read by the .ovpn file, so you can set them to whatever.
+Add a new volume mount to your `docker run` command that mounts the folder that contains your config file and also if it contains your certificate:
+`-v /path/to/your/config.ovpn:/etc/openvpn/custom/`
 
-Note that you still need to modify your .ovpn file as described in the previous section. If you have an separate ca.crt file your volume mount should be a folder containing both the ca.crt and the .ovpn config.
+Then you can set `OPENVPN_PROVIDER=CUSTOM` and `OPENVPN_CONFIG=NAMEOFCONFIGFILE`. If you are using AirVPN or other provider with credentials in the config file, you still need to set `OPENVPN_USERNAME` and `OPENVPN_PASSWORD` as this is required by the startup script. They will not be read by the .ovpn file, so you can set them to whatever.
+
+If you have a seperate certificate file, open the .ovpn file, change the the lines which contains `ca` to say `ca /etc/openvpn/custom/nameofcrt.crt`
 
 ## Controlling Transmission remotely
 The container exposes /config as a volume. This is the directory where the supplied transmission and OpenVPN credentials will be stored.
